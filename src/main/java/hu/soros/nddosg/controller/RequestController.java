@@ -24,10 +24,11 @@ public class RequestController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestController.class);
 
 	@GetMapping(value = "/request", produces = "application/json")
-	public ResponseEntity<MainCounterDto> getRequest(HttpServletRequest request) {
+	public ResponseEntity<String> getRequest() {
 		LOGGER.trace("Request arrived.");
 		try {
-			return ResponseEntity.ok(requestService.getRequest(request));
+			requestService.getRequest();
+			return ResponseEntity.status(HttpStatus.OK).build();
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}

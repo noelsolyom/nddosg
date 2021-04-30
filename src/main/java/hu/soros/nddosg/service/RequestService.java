@@ -21,10 +21,14 @@ public class RequestService {
 
 	@Value("${value.name}")
 	private String valueName;
+	
+	@Autowired
+	@Qualifier("brokerMessagingTemplate")
+	private MessageSendingOperations<String> brokerMessagingTemplate;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
 
-	public MainCounterDto getRequest(HttpServletRequest request) throws Exception {
+	public MainCounterDto getRequest() throws Exception {
 		JedisPool jedisPool = JedisConnector.getPool();
 		try (Jedis jedis = jedisPool.getResource()){
 			if(valueName == null) {
@@ -46,12 +50,18 @@ public class RequestService {
 			jedis.close();
 			jedis.quit();
 			jedisPool.destroy();
-			return new MainCounterDto(data);
+			MainCounterDto result = new MainCounterDto(data);
+			publishCurrentMainCounterResult(result);
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 
+	}
+	
+	public void publishCurrentMainCounterResult(MainCounterDto result) {
+		brokerMessagingTemplate.convertAndSend("/topic/mainCounter", result);
 	}
 
 }

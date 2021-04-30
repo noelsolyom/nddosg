@@ -4,7 +4,9 @@ public class MainCounterDto {
 
 	private String data;
 	
-	
+	public MainCounterDto() {
+		super();
+	}
 
 	public MainCounterDto(String data) {
 		super();
