@@ -45,6 +45,7 @@ public class RequestService {
 			}
 			jedis.close();
 			jedis.quit();
+			jedisPool.destroy();
 			return new MainCounterDto(data);
 		} catch (Exception e) {
 			e.printStackTrace();

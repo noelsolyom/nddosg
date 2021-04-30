@@ -86,6 +86,7 @@ public class JedisConnector {
 			}
 			jedis.close();
 			jedis.quit();
+			jedisPool.destroy();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
