@@ -24,5 +24,5 @@ function disconnect() {
 }
 
 function showMainCounter(mainCounter) {
-    document.getElementById("main-counter").innerHTML = mainCounter.data + "db. támadás";
+    document.getElementById("main-counter").innerHTML = mainCounter.data + " db. támadás";
 }
