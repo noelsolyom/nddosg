@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import hu.soros.nddosg.components.JedisConnector;
 import hu.soros.nddosg.dto.MainCounterDto;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 @Service
 public class RequestService {
@@ -24,15 +25,14 @@ public class RequestService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
 
 	public MainCounterDto getRequest(HttpServletRequest request) throws Exception {
-
-		try {
+		JedisPool jedisPool = JedisConnector.getPool();
+		try (Jedis jedis = jedisPool.getResource()){
 			if(valueName == null) {
 				throw new IllegalStateException("Value name is not present in service.");
 			}
-			Jedis jedis = JedisConnector.getConnection();
 			jedis.select(0);
 			String data = null;
-			String cachedResponse = findMainCounter();
+			String cachedResponse = jedis.get(valueName);
 			LOGGER.trace("cachedResponse: {}", cachedResponse);
 			if (cachedResponse != null) {
 				data = Long.toString(Long.parseLong(cachedResponse) + 1);
@@ -42,8 +42,8 @@ public class RequestService {
 				LOGGER.error("Runtime cachedResponse is null.");
 				data = "1";
 				jedis.set(valueName, data);
-				jedis.close();
 			}
+			jedis.close();
 			return new MainCounterDto(data);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -52,12 +52,4 @@ public class RequestService {
 
 	}
 
-	public String findMainCounter() {
-		LOGGER.trace("Getting main counter data...");
-		Jedis jedis = JedisConnector.getConnection();
-		jedis.select(0);
-		String value = jedis.get(valueName);
-		jedis.close();
-		return value;
-	}
 }

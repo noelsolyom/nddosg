@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 @Component
 public class JedisConnector {
@@ -25,48 +27,56 @@ public class JedisConnector {
 	String valueName;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JedisConnector.class);
-
-	public static Jedis getConnection() {
-		try {
-
-			String rUrl = System.getenv("REDIS_URL");
+	
+	public static JedisPool getPool() {
+	    try {
+	    	
+	    	String rUrl = System.getenv("REDIS_URL");
 			rUrl = rUrl == null ? System.getenv("REDIS_LOCAL_URL") : rUrl;
 			if(rUrl == null) {
-				throw new IllegalStateException("Value name is not present in connector.");
+				throw new IllegalStateException("Redis connection is not present in connector.");
 			}
-			TrustManager bogusTrustManager = new X509TrustManager() {
-				@Override
-				public X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
+	        TrustManager bogusTrustManager = new X509TrustManager() {
+	            public X509Certificate[] getAcceptedIssuers() {
+	                return null;
+	            }
 
-				@Override
-				public void checkClientTrusted(X509Certificate[] certs, String authType) {
-				}
+	            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+	            }
 
-				@Override
-				public void checkServerTrusted(X509Certificate[] certs, String authType) {
-				}
-			};
+	            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+	            }
+	        };
 
-			SSLContext sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(null, new TrustManager[] { bogusTrustManager }, new java.security.SecureRandom());
+	        SSLContext sslContext = SSLContext.getInstance("SSL");
+	        sslContext.init(null, new TrustManager[]{bogusTrustManager}, new java.security.SecureRandom());
 
-			HostnameVerifier bogusHostnameVerifier = (hostname, session) -> true;
+	        HostnameVerifier bogusHostnameVerifier = (hostname, session) -> true;
 
-			return new Jedis(URI.create(rUrl), sslContext.getSocketFactory(), sslContext.getDefaultSSLParameters(),
-					bogusHostnameVerifier);
+	        JedisPoolConfig poolConfig = new JedisPoolConfig();
+	        poolConfig.setMaxTotal(10);
+	        poolConfig.setMaxIdle(5);
+	        poolConfig.setMinIdle(1);
+	        poolConfig.setTestOnBorrow(true);
+	        poolConfig.setTestOnReturn(true);
+	        poolConfig.setTestWhileIdle(true);
 
-		} catch (NoSuchAlgorithmException | KeyManagementException e) {
-			throw new RuntimeException("Cannot obtain Redis connection!", e);
-		}
+	        return new JedisPool(poolConfig,
+	                URI.create(rUrl),
+	                sslContext.getSocketFactory(),
+	                sslContext.getDefaultSSLParameters(),
+	                bogusHostnameVerifier);
+
+	    } catch (NoSuchAlgorithmException | KeyManagementException e) {
+	        throw new RuntimeException("Cannot obtain Redis connection!", e);
+	    }
 	}
 
 	@PostConstruct
 	public void init() {
 		LOGGER.trace("Init...");
-		try {
-			Jedis jedis = JedisConnector.getConnection();
+		JedisPool jedisPool = JedisConnector.getPool();
+		try (Jedis jedis = jedisPool.getResource()){
 			jedis.select(0);
 			String cachedResponse = jedis.get(valueName);
 			LOGGER.trace("cachedResponse: bn", cachedResponse);
@@ -74,7 +84,7 @@ public class JedisConnector {
 				LOGGER.trace("Cached response not found. Setting to 0.");
 				jedis.set(valueName, "0");
 			}
-
+			jedis.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
