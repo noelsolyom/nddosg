@@ -85,6 +85,7 @@ public class JedisConnector {
 				jedis.set(valueName, "0");
 			}
 			jedis.close();
+			jedis.quit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
