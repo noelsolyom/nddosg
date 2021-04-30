@@ -55,6 +55,7 @@ public class RequestService {
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
+			jedisPool.destroy();
 			throw e;
 		}
 

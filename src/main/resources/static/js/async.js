@@ -15,6 +15,12 @@ function connectMainCounter() {
     });
 }
 
+var stompFailureCallback = function (error) {
+    console.log('STOMP: ' + error);
+    setTimeout(stompConnect, 10000);
+    console.log('STOMP: Reconecting in 10 seconds');
+};
+
 
 function disconnect() {
     if (stompMainCounterClient != null) {
@@ -24,5 +30,17 @@ function disconnect() {
 }
 
 function showMainCounter(mainCounter) {
-    document.getElementById("main-counter").innerHTML = mainCounter.data + " db. támadás";
+    document.getElementById("main-counter").innerHTML = `${mainCounter.data} db. "támadás"`;
 }
+
+function checkComm() {
+    setInterval(function() {
+        if(stompMainCounterClient == null || stompMainCounterClient == undefined || !stompMainCounterClient.connected) {
+        	console.log("Reconnecting...");
+        	connectMainCounter();
+        } 
+    }, 10000);
+
+}
+
+checkComm();
