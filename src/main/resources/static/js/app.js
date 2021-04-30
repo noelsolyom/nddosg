@@ -5,4 +5,4 @@ document.getElementsByClassName("cover-wrap")[0].addEventListener("click", funct
     else this.classList.add("active");
 });
 
-connectWs();
+start();

@@ -1,10 +1,19 @@
-async function attack() {
-	if(stompMainCounterClient == undefined ||stompMainCounterClient == null || stompMainCounterClient.connected == false) {
-		console.log("Reconnecting...");
-		connectWs();
-	}
-    let response = await fetch('/request');
-    if (!response.ok) {
-        console(response.message);
-    }
+function start() {
+	let response = fetch('/request').then(function(serverPromise){ 
+	      serverPromise.json()
+	        .then(function(j) { 
+	          showMainCounter(j);
+	        })
+	        .catch(function(e){
+	          console.log(e);
+	        });
+	    })
+	    .catch(function(e){
+	        console.log(e);
+	      });
+	
+}
+
+function showMainCounter(mainCounter) {
+    document.getElementById("main-counter").innerHTML = mainCounter.data + " db. támadás.";
 }

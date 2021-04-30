@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import hu.soros.nddosg.dto.MainCounterDto;
 import hu.soros.nddosg.service.RequestService;
 
 @RestController
@@ -23,11 +24,10 @@ public class RequestController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestController.class);
 
 	@GetMapping(value = "/request", produces = "application/json")
-	public ResponseEntity<String> getRequest(HttpServletRequest request) {
+	public ResponseEntity<MainCounterDto> getRequest(HttpServletRequest request) {
 		LOGGER.trace("Request arrived.");
 		try {
-			requestService.getRequest(request);
-			return ResponseEntity.ok().build();
+			return ResponseEntity.ok(requestService.getRequest(request));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}

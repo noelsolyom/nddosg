@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.core.MessageSendingOperations;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +21,9 @@ public class RequestService {
 	@Value("${value.name}")
 	private String valueName;
 
-	@Autowired
-	private JedisConnector jedisConnector;
-
-	@Autowired
-	@Qualifier("brokerMessagingTemplate")
-	private MessageSendingOperations<String> brokerMessagingTemplate;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
 
-	public void getRequest(HttpServletRequest request) throws Exception {
+	public MainCounterDto getRequest(HttpServletRequest request) throws Exception {
 
 		try {
 			if(valueName == null) {
@@ -49,19 +43,12 @@ public class RequestService {
 				data = "1";
 				jedis.set(valueName, data);
 			}
-			publishCurrentMainCounterResult(data);
+			return new MainCounterDto(data);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 
-	}
-
-	public void publishCurrentMainCounterResult(String data) {
-		LOGGER.trace("Publishing...");
-		MainCounterDto result = new MainCounterDto();
-		result.setData(data);
-		brokerMessagingTemplate.convertAndSend("/topic/mainCounter", result);
 	}
 
 	public String findMainCounter() {
