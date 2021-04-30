@@ -42,6 +42,7 @@ public class RequestService {
 				LOGGER.error("Runtime cachedResponse is null.");
 				data = "1";
 				jedis.set(valueName, data);
+				jedis.close();
 			}
 			return new MainCounterDto(data);
 		} catch (Exception e) {
@@ -55,6 +56,8 @@ public class RequestService {
 		LOGGER.trace("Getting main counter data...");
 		Jedis jedis = JedisConnector.getConnection();
 		jedis.select(0);
-		return jedis.get(valueName);
+		String value = jedis.get(valueName);
+		jedis.close();
+		return value;
 	}
 }
