@@ -37,7 +37,6 @@ function checkComm() {
         	connectMainCounter();
         } 
     }, 10000);
-
 }
 
 checkComm();

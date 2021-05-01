@@ -1,10 +1,7 @@
 package hu.soros.nddosg.controller;
 
-import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -40,7 +37,6 @@ public class MainCounterWSController implements ApplicationListener<SessionSubsc
 			brokerMessagingTemplate.convertAndSend(destination, result);
 
 		}
-
 	}
 
 }
