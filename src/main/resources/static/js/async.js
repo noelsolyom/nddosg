@@ -15,13 +15,6 @@ function connectMainCounter() {
     });
 }
 
-var stompFailureCallback = function (error) {
-    console.log('STOMP: ' + error);
-    setTimeout(stompConnect, 10000);
-    console.log('STOMP: Reconecting in 10 seconds');
-};
-
-
 function disconnect() {
     if (stompMainCounterClient != null) {
     	stompMainCounterClient.disconnect();
@@ -31,6 +24,10 @@ function disconnect() {
 
 function showMainCounter(mainCounter) {
     document.getElementById("main-counter").innerHTML = `${mainCounter.data} db. "támadás"`;
+	document.body.style.background="#ff0000";
+	setInterval(function() {
+    	document.body.style.background="#303e55";
+    }, 25);
 }
 
 function checkComm() {
