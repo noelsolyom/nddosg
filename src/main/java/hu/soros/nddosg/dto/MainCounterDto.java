@@ -3,7 +3,7 @@ package hu.soros.nddosg.dto;
 public class MainCounterDto {
 
 	private String data;
-	
+
 	public MainCounterDto() {
 		super();
 	}

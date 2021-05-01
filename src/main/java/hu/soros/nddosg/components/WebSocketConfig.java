@@ -21,5 +21,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry.addEndpoint("/mainCounterData");
 		registry.addEndpoint("/mainCounterData").withSockJS();
 	}
-	
+
 }

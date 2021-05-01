@@ -18,7 +18,7 @@ public class RequestService {
 
 	@Value("${value.name}")
 	private String valueName;
-	
+
 	@Autowired
 	@Qualifier("brokerMessagingTemplate")
 	private MessageSendingOperations<String> brokerMessagingTemplate;
@@ -27,8 +27,8 @@ public class RequestService {
 
 	public MainCounterDto getRequest() throws Exception {
 		JedisPool jedisPool = JedisConnector.getPool();
-		try (Jedis jedis = jedisPool.getResource()){
-			if(valueName == null) {
+		try (Jedis jedis = jedisPool.getResource()) {
+			if (valueName == null) {
 				throw new IllegalStateException("Value name is not present in service.");
 			}
 			jedis.select(0);
@@ -57,7 +57,7 @@ public class RequestService {
 		}
 
 	}
-	
+
 	public void publishCurrentMainCounterResult(MainCounterDto result) {
 		brokerMessagingTemplate.convertAndSend("/topic/mainCounter", result);
 	}

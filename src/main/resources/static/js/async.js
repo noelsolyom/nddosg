@@ -1,7 +1,7 @@
 var stompMainCounterClient = null;
 
 function connectWs() {
-	connectMainCounter();
+    connectMainCounter();
 }
 
 function connectMainCounter() {
@@ -10,7 +10,7 @@ function connectMainCounter() {
     stompMainCounterClient.connect({}, function (frame) {
         console.log('Main counter connected: ' + frame);
         stompMainCounterClient.subscribe('/topic/mainCounter', function (mainCounter) {
-        	document.body.style.background="#ff0000";
+            document.body.style.background = "#ff0000";
             showMainCounter(JSON.parse(mainCounter.body));
         });
     });
@@ -18,24 +18,24 @@ function connectMainCounter() {
 
 function disconnect() {
     if (stompMainCounterClient != null) {
-    	stompMainCounterClient.disconnect();
-    	stompMainCounterClient.log('Main counter disconnected.');
+        stompMainCounterClient.disconnect();
+        stompMainCounterClient.log('Main counter disconnected.');
     }
 }
 
 function showMainCounter(mainCounter) {
     document.getElementById("main-counter").innerHTML = `${mainCounter.data} db. "támadás"`;
-	setInterval(function() {
-		document.body.style.background="#303e55";
+    setInterval(function () {
+        document.body.style.background = "#303e55";
     }, 100);
 }
 
 function checkComm() {
-    setInterval(function() {
-        if(stompMainCounterClient == null || stompMainCounterClient == undefined || !stompMainCounterClient.connected) {
-        	console.log("Reconnecting...");
-        	connectMainCounter();
-        } 
+    setInterval(function () {
+        if (stompMainCounterClient == null || stompMainCounterClient == undefined || !stompMainCounterClient.connected) {
+            console.log("Reconnecting...");
+            connectMainCounter();
+        }
     }, 10000);
 }
 
