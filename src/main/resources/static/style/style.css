@@ -151,19 +151,6 @@ body {
     inset 0px 65px 5px 7px rgba(0,0,0,0.2);
   }
 
-  header {
-    --vh: 9.39px;
-    font: 400 14px 'Roboto', sans-serif;
-    color: rgb(0, 0, 0);
-    margin: 0;
-    border: 0;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 15px 0;
-  }
-
   main {
     --vh: 9.39px;
     font: 400 14px 'Roboto', sans-serif;
@@ -197,8 +184,6 @@ body {
 
   .title {
     --vh: 9.39px;
-    font: 400 14px 'Roboto', sans-serif;
-    color: rgb(0, 0, 0);
     margin: 0;
     padding: 0;
     border: 0;
@@ -206,5 +191,33 @@ body {
     font-size: 24px;
     font-weight: 900;
     line-height: 1.1rem;
+  }
+  
+    header {
+    --vh: 9.39px;
+    font: 400 14px 'Roboto', sans-serif;
+    color: rgb(0, 0, 0);
+    margin: 0;
+    border: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 0;
+  }
+  
+  footer {
+      --vh: 9.39px;
+    font: 400 14px 'Roboto', sans-serif;
+    color: rgb(0, 0, 0);
+    margin: 0;
+    border: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    text-align: center;
+    padding: 0 5%;
   }
   
