@@ -3,5 +3,4 @@ async function start() {
 	if(!response.ok) {
 		alert("Sikerült. A szerver túl lett terhelve.");
 	}
-	
 }

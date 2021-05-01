@@ -10,6 +10,7 @@ function connectMainCounter() {
     stompMainCounterClient.connect({}, function (frame) {
         console.log('Main counter connected: ' + frame);
         stompMainCounterClient.subscribe('/topic/mainCounter', function (mainCounter) {
+        	document.body.style.background="#ff0000";
             showMainCounter(JSON.parse(mainCounter.body));
         });
     });
@@ -24,10 +25,9 @@ function disconnect() {
 
 function showMainCounter(mainCounter) {
     document.getElementById("main-counter").innerHTML = `${mainCounter.data} db. "támadás"`;
-	document.body.style.background="#ff0000";
 	setInterval(function() {
-    	document.body.style.background="#303e55";
-    }, 25);
+		document.body.style.background="#303e55";
+    }, 100);
 }
 
 function checkComm() {
