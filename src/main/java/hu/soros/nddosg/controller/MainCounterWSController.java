@@ -30,12 +30,11 @@ public class MainCounterWSController implements ApplicationListener<SessionSubsc
 			String destination = accessor.getDestination();
 			MainCounterDto result = new MainCounterDto();
 			try {
-				result = requestService.getRequest();
+				result.setData(requestService.getRequest());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			brokerMessagingTemplate.convertAndSend(destination, result);
-
 		}
 	}
 

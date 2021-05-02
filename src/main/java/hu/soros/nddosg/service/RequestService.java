@@ -2,10 +2,15 @@ package hu.soros.nddosg.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.messaging.core.MessageSendingOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import hu.soros.nddosg.components.JedisConnector;
@@ -14,7 +19,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 @Service
-public class RequestService {
+public class RequestService implements BeanNameAware, ApplicationContextAware {
+
+	private String beanName;
+	private ApplicationContext context;
 
 	@Value("${value.name}")
 	private String valueName;
@@ -25,7 +33,7 @@ public class RequestService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestService.class);
 
-	public MainCounterDto getRequest() throws Exception {
+	public String getRequest() throws Exception {
 		JedisPool jedisPool = JedisConnector.getPool();
 		try (Jedis jedis = jedisPool.getResource()) {
 			if (valueName == null) {
@@ -48,8 +56,8 @@ public class RequestService {
 			jedis.quit();
 			jedisPool.destroy();
 			MainCounterDto result = new MainCounterDto(data);
-			publishCurrentMainCounterResult(result);
-			return result;
+			((RequestService) this.context.getBean(beanName)).publishCurrentMainCounterResult(result);
+			return data;
 		} catch (Exception e) {
 			e.printStackTrace();
 			jedisPool.destroy();
@@ -58,8 +66,19 @@ public class RequestService {
 
 	}
 
-	public void publishCurrentMainCounterResult(MainCounterDto result) {
+	@Async
+	public void publishCurrentMainCounterResult(MainCounterDto result) throws Exception {
 		brokerMessagingTemplate.convertAndSend("/topic/mainCounter", result);
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.context = applicationContext;
+	}
+
+	@Override
+	public void setBeanName(String name) {
+		this.beanName = name;
 	}
 
 }
